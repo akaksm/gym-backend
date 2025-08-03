@@ -34,7 +34,7 @@ app.use(express.json()) // Middleware to parse JSON request bodies
 app.use(express.urlencoded({ extended: true })) // Middleware to parse URL-encoded request bodies
 app.use('/api/image', express.static('./public/uploads'))
 app.use(cors({
-  origin: ['http://localhost:5173'],
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
   methods: ['POST', 'PUT', 'GET', 'DELETE'],
   credentials: true
 }))
