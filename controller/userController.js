@@ -178,8 +178,8 @@ export const deleteUser = asyncHandler(async (req, res) => {
 export const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body
     if (!email || !password) throw new ApiError(`Email or password are required.`, 400)
-    if (!isValidEmail(email)) throw new ApiError(`Invalid email format.`, 400)
-    if (!isStrongPassword(password)) throw new ApiError(`Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.`, 400)
+    // if (!isValidEmail(email)) throw new ApiError(`Invalid email format.`, 400)
+    // if (!isStrongPassword(password)) throw new ApiError(`Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.`, 400)
     const user = await User.findOne({ email: email })
     if (!user) throw new ApiError(`Email is not register.`, 400)
     const comparepassword = await bcrypt.compare(password, user.password)
