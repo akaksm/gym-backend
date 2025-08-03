@@ -18,8 +18,8 @@ export const register = asyncHandler(async (req, res) => {
 
     if (!isValidName(name)) throw new ApiError(`Invalid name.`, 400)
     if (!isValidEmail(email)) throw new ApiError(`Invalid email format.`, 400)
-    if (!isStrongPassword(password)) throw new ApiError(`Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.`, 400)
-    if (!isValidPhone(phone)) throw new ApiError(`Phone number must be exactly 10 digits.`, 400)
+    // if (!isStrongPassword(password)) throw new ApiError(`Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.`, 400)
+    // if (!isValidPhone(phone)) throw new ApiError(`Phone number must be exactly 10 digits.`, 400)
 
     if (password !== confirmPassword) throw new ApiError(`Passwords do not match`, 400)
 
@@ -247,7 +247,7 @@ export const verifyForgetPasswordOTP = asyncHandler(async (req, res) => {
 
 export const forgetPasswordChange = asyncHandler(async (req, res) => {
     const { email, password, confirmPassword } = req.body
-    if (!isStrongPassword(password)) throw new ApiError(`Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.`, 400)
+    // if (!isStrongPassword(password)) throw new ApiError(`Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.`, 400)
     if (password !== confirmPassword) throw new ApiError(`Password does not match.`, 400)
     const user = await User.findOne({ email: email })
     if (!user) throw new ApiError(`Email is not registered`)
