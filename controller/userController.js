@@ -193,7 +193,9 @@ export const loginUser = asyncHandler(async (req, res) => {
 
     const token = generateToken(data)
     const showdata = await User.findById(user._id).select('-password')
-    return res.json({ token, data: showdata })
+    return res.status(200).json(
+        new ApiResponse("User login successfull.", { token, data: showdata })
+    )
 })
 
 export const passwordChange = asyncHandler(async (req, res) => {
