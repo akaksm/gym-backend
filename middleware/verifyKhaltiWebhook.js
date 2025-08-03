@@ -14,7 +14,7 @@ export const verifyKhaltiWebhook = asyncHandler(async (req, res, next) => {
         .digest('hex')
 
     if (khaltiSecret !== expectedSignature) {
-        throw new ApiError(403, "Invalid webhook signature")
+        throw new ApiError("Invalid webhook signature", 403)
     }
     next()
 })

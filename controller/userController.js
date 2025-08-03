@@ -153,27 +153,27 @@ export const updateUser = asyncHandler(async (req, res) => {
 })
 
 export const deleteUser = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id);
-    if (!user) throw new ApiError(404, "User not found");
+    const user = await User.findById(req.params.id)
+    if (!user) throw new ApiError(404, "User not found")
 
     // Check for active membership
     const activeMembership = await Membership.findOne({
         user: user._id,
         isActive: true,
         endDate: { $gte: new Date() }
-    });
+    })
     if (activeMembership) {
-        throw new ApiError(400, "Cannot delete user with active membership");
+        throw new ApiError(400, "Cannot delete user with active membership")
     }
 
     // Soft delete (set isDeleted flag)
-    user.isDeleted = true;
-    await user.save();
+    user.isDeleted = true
+    await user.save()
 
     return res.status(200).json(
-        new ApiResponse(200, null, "User deactivated (soft delete)")
-    );
-});
+        new ApiResponse("User deactivated", user.isDeleted)
+    )
+})
 
 export const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body
@@ -207,13 +207,14 @@ export const passwordChange = asyncHandler(async (req, res) => {
     if (!isStrongPassword(password)) throw new ApiError(`Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.`, 400)
     if (password !== confirmPassword) throw new ApiError(`confirm password and password does not match`, 400)
     const comparepassword = await bcrypt.compare(oldpassword, user.password)
+    if (!comparepassword) throw new ApiError(`Incorrect Old Password`, 400)
     if (comparepassword) {
         const hash_password = await bcrypt.hash(password, 10)
         user.password = hash_password
         await user.save()
         return res.status(200).json(new ApiResponse(`Password changed successfully.`))
     }
-    return res.status(400).json(new ApiResponse(`Old password is incorrect.`))
+
 })
 
 export const forgetPassword = asyncHandler(async (req, res) => {
@@ -274,11 +275,11 @@ export const getUserDashboard = asyncHandler(async (req, res) => {
         throw new ApiError('User not found', 404)
     }
 
-    let membershipStatus = "inactive";
+    let membershipStatus = "inactive"
     if (user.membership) {
-        const now = new Date();
+        const now = new Date()
         if (user.membership.isActive && user.membership.endDate >= now) {
-            membershipStatus = "active";
+            membershipStatus = "active"
         }
     }
 

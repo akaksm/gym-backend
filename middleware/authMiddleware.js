@@ -35,7 +35,7 @@ export const adminAuthMiddleware = asyncHandler(async (req, res, next) => {
 
 export const checkExpiredMembership = asyncHandler(async (req, res, next) => {
     const membership = await Membership.findById(req.params.id)
-    if (!membership) throw new ApiError(`Membership not found`)
+    if (!membership) throw new ApiError(`Membership not found`, 400)
 
     req.isExpired = membership.endDate < new Date()
     req.membership = membership

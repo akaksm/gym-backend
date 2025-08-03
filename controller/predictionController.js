@@ -16,7 +16,7 @@ export const generatePrediction = asyncHandler(async (req, res) => {
 
     const user = await User.findById(userId)
     if (!user) {
-        throw new ApiError(404, "User not found")
+        throw new ApiError("User not found", 404)
     }
 
     // Update user with work schedule if provided
@@ -85,12 +85,12 @@ export const generatePrediction = asyncHandler(async (req, res) => {
     })
 
     return res.status(201).json(
-        new ApiResponse(201, {
+        new ApiResponse("Optimal workout time prediction generated successfully", {
             prediction: predictionRecord,
             optimalTime: prediction.optimalSlot,
             alternatives: prediction.alternativeSlots,
             factors: prediction.factors
-        }, "Optimal workout time prediction generated successfully")
+        }, `Success`, 201)
     )
 })
 
@@ -137,7 +137,7 @@ export const updatePrediction = asyncHandler(async (req, res) => {
 
     const prediction = await Prediction.findById(predictionId)
     if (!prediction) {
-        throw new ApiError(404, "Prediction not found")
+        throw new ApiError("Prediction not found", 404)
     }
 
     // Calculate accuracy based on actual vs predicted
@@ -149,10 +149,10 @@ export const updatePrediction = asyncHandler(async (req, res) => {
     await prediction.save()
 
     return res.status(200).json(
-        new ApiResponse(200, {
+        new ApiResponse("Prediction updated with actual workout results", {
             prediction,
             accuracy
-        }, "Prediction updated with actual workout results")
+        })
     )
 })
 
@@ -163,7 +163,7 @@ export const getUserPredictions = asyncHandler(async (req, res) => {
 
     const user = await User.findById(userId)
     if (!user) {
-        throw new ApiError(404, "User not found")
+        throw new ApiError("User not found", 404)
     }
 
     const skip = (page - 1) * limit
@@ -181,7 +181,7 @@ export const getUserPredictions = asyncHandler(async (req, res) => {
         : 0
 
     return res.status(200).json(
-        new ApiResponse(200, {
+        new ApiResponse("User predictions retrieved successfully", {
             predictions,
             pagination: {
                 page: parseInt(page),
@@ -194,7 +194,7 @@ export const getUserPredictions = asyncHandler(async (req, res) => {
                 completedPredictions: completedPredictions.length,
                 successRate: Math.round(successRate)
             }
-        }, "User predictions retrieved successfully")
+        })
     )
 })
 
@@ -229,7 +229,7 @@ export const getPredictionAnalytics = asyncHandler(async (req, res) => {
     }, {})
 
     return res.status(200).json(
-        new ApiResponse(200, {
+        new ApiResponse("Prediction analytics retrieved successfully", {
             analytics: {
                 totalPredictions,
                 averageAccuracy: Math.round(averageAccuracy),
@@ -238,7 +238,7 @@ export const getPredictionAnalytics = asyncHandler(async (req, res) => {
                 recommendationFrequency
             },
             predictions: predictions.slice(0, 10) // Return last 10 for detailed view
-        }, "Prediction analytics retrieved successfully")
+        })
     )
 })
 
@@ -248,11 +248,11 @@ export const deletePrediction = asyncHandler(async (req, res) => {
 
     const prediction = await Prediction.findByIdAndDelete(predictionId)
     if (!prediction) {
-        throw new ApiError(404, "Prediction not found")
+        throw new ApiError("Prediction not found", 404)
     }
 
     return res.status(200).json(
-        new ApiResponse(200, {}, "Prediction deleted successfully")
+        new ApiResponse("Prediction deleted successfully", {})
     )
 })
 

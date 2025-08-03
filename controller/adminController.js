@@ -121,13 +121,13 @@ export const adminPasswordChange = asyncHandler(async (req, res) => {
     if (!oldpassword || !password || !confirmPassword) throw new ApiError(`One or more fields are empty`, 400)
     if (password !== confirmPassword) throw new ApiError(`Confirm password and password do not match`, 400)
     const comparepassword = await bcrypt.compare(oldpassword, admin.password)
+    if (!comparepassword) throw new ApiError(`Incorrect Old Password`)
     if (comparepassword) {
         const hash_password = await bcrypt.hash(password, 10)
         admin.password = hash_password
         await admin.save()
         return res.status(200).json(new ApiResponse(`Password changed successfully.`))
     }
-    return res.status(400).json(new ApiResponse(`Old password is incorrect.`))
 })
 
 // Admin forget password

@@ -44,7 +44,7 @@ export const registerTrainer = asyncHandler(async (req, res) => {
 
     sendVerificationEmail(trainer)
 
-    return res.status(201).json(new ApiResponse(`Trainer registered successfully`, trainer))
+    return res.status(200).json(new ApiResponse(`Trainer registered successfully`, trainer))
 })
 
 // Trainer login
@@ -64,7 +64,7 @@ export const loginTrainer = asyncHandler(async (req, res) => {
 
     const token = generateToken(data)
     const showdata = await Trainer.findById(trainer._id).select('-password')
-    return res.json({ token, data: showdata })
+    return res.json(new ApiResponse(`Trainer login successfull`, { token, data: showdata }))
 })
 
 // Verify OTP for trainer
@@ -91,7 +91,7 @@ export const resendTrainerOTP = asyncHandler(async (req, res) => {
     trainer.otpExpiry = Date.now() + 10 * 60 * 1000
     sendVerificationEmail(trainer)
     await trainer.save()
-    res.status(201).json(new ApiResponse(`New OTP has been sent to your email.`, trainer))
+    res.status(200).json(new ApiResponse(`New OTP has been sent to your email.`, trainer))
 })
 
 // Get all trainers (for client selection)
@@ -165,13 +165,13 @@ export const trainerPasswordChange = asyncHandler(async (req, res) => {
     if (!oldpassword || !password || !confirmPassword) throw new ApiError(`One or more fields are empty`, 400)
     if (password !== confirmPassword) throw new ApiError(`Confirm password and password do not match`, 400)
     const comparepassword = await bcrypt.compare(oldpassword, trainer.password)
+    if (!comparepassword) throw new ApiError(`Old password is incorrect.`, 400)
     if (comparepassword) {
         const hash_password = await bcrypt.hash(password, 10)
         trainer.password = hash_password
         await trainer.save()
         return res.status(200).json(new ApiResponse(`Password changed successfully.`))
     }
-    return res.status(400).json(new ApiResponse(`Old password is incorrect.`))
 })
 
 // Trainer forget password

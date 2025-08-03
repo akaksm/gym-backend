@@ -245,11 +245,11 @@ class WorkoutTimePredictor {
 
             // Check if slot conflicts with work schedule
             const conflictsWithWork = (slotStart >= workStartHour && slotStart < workEndHour) ||
-                                    (slotEnd > workStartHour && slotEnd <= workEndHour)
+                (slotEnd > workStartHour && slotEnd <= workEndHour)
 
             // Check if slot conflicts with commute time
-            const conflictsWithCommute = (slotStart >= workStartHour - commuteTime/60 && slotStart < workStartHour) ||
-                                       (slotEnd > workEndHour && slotEnd <= workEndHour + commuteTime/60)
+            const conflictsWithCommute = (slotStart >= workStartHour - commuteTime / 60 && slotStart < workStartHour) ||
+                (slotEnd > workEndHour && slotEnd <= workEndHour + commuteTime / 60)
 
             if (!conflictsWithWork && !conflictsWithCommute) {
                 slots.push({
@@ -532,7 +532,7 @@ class WorkoutTimePredictor {
         try {
             // Get all completed predictions
             const predictions = await Prediction.find({ isCompleted: true })
-            
+
             if (predictions.length < 50) {
                 console.log('Insufficient training data. Need at least 50 completed predictions.')
                 return false

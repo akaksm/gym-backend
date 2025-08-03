@@ -25,17 +25,17 @@ export const enrollFingerprint = asyncHandler(async (req, res) => {
     const { userId, fingerIndex = 0 } = req.body
 
     if (!userId) {
-        throw new ApiError(400, "User ID is required")
+        throw new ApiError("User ID is required", 400)
     }
 
     try {
         const result = await fingerprintService.enrollUser(userId, fingerIndex)
 
         return res.status(200).json(
-            new ApiResponse(200, result, "Fingerprint enrolled successfully")
+            new ApiResponse("Fingerprint enrolled successfully", result)
         )
     } catch (error) {
-        throw new ApiError(error.statusCode || 500, error.message)
+        throw new ApiError(error.message, error.statusCode || 500)
     }
 })
 
@@ -43,17 +43,17 @@ export const recordFingerprintAttendance = asyncHandler(async (req, res) => {
     const { userId, fingerIndex = 0 } = req.body
 
     if (!userId) {
-        throw new ApiError(400, "User ID is required")
+        throw new ApiError("User ID is required", 400)
     }
 
     try {
         const result = await fingerprintService.verifyAttendance(userId, fingerIndex)
 
         return res.status(200).json(
-            new ApiResponse(200, result, "Attendance recorded via fingerprint")
+            new ApiResponse("Attendance recorded via fingerprint", result)
         )
     } catch (error) {
-        throw new ApiError(error.statusCode || 500, error.message)
+        throw new ApiError(error.message, error.statusCode || 500)
     }
 })
 
@@ -62,12 +62,12 @@ export const markManualAttendance = asyncHandler(async (req, res) => {
     const { userId, date, action, notes } = req.body
 
     if (!userId || !date || !action) {
-        throw new ApiError(400, "User ID, date, and action are required")
+        throw new ApiError("User ID, date, and action are required", 400)
     }
 
     const user = await User.findById(userId)
     if (!user) {
-        throw new ApiError(404, "User not found")
+        throw new ApiError("User not found", 400)
     }
 
     const attendanceDate = new Date(date)
@@ -77,7 +77,7 @@ export const markManualAttendance = asyncHandler(async (req, res) => {
 
     if (action === 'check-in') {
         if (attendance && attendance.checkInTime) {
-            throw new ApiError(409, "User already checked in for this date")
+            throw new ApiError("User already checked in for this date", 400)
         }
 
         if (!attendance) {
@@ -99,16 +99,16 @@ export const markManualAttendance = asyncHandler(async (req, res) => {
             await attendance.save()
         }
 
-        return res.status(201).json(
-            new ApiResponse(201, attendance, "Manual check-in recorded")
+        return res.status(200).json(
+            new ApiResponse("Manual check-in recorded", attendance)
         )
     } else if (action === 'check-out') {
         if (!attendance || !attendance.checkInTime) {
-            throw new ApiError(400, "User must check in before checking out")
+            throw new ApiError("User must check in before checking out", 400)
         }
 
         if (attendance.checkOutTime) {
-            throw new ApiError(409, "User already checked out for this date")
+            throw new ApiError("User already checked out for this date", 400)
         }
 
         attendance.checkOutTime = new Date()
@@ -118,7 +118,7 @@ export const markManualAttendance = asyncHandler(async (req, res) => {
         await attendance.save()
 
         return res.status(200).json(
-            new ApiResponse(200, attendance, "Manual check-out recorded")
+            new ApiResponse("Manual check-out recorded", attendance)
         )
     } else if (action === 'absent') {
         if (attendance) {
@@ -139,10 +139,10 @@ export const markManualAttendance = asyncHandler(async (req, res) => {
         }
 
         return res.status(200).json(
-            new ApiResponse(200, attendance, "Absence recorded")
+            new ApiResponse("Absence recorded", attendance)
         )
     } else {
-        throw new ApiError(400, "Invalid action. Use 'check-in', 'check-out', or 'absent'")
+        throw new ApiError("Invalid action. Use 'check-in', 'check-out', or 'absent'", 400)
     }
 })
 
@@ -153,7 +153,7 @@ export const getUserAttendance = asyncHandler(async (req, res) => {
 
     const user = await User.findById(userId)
     if (!user) {
-        throw new ApiError(404, "User not found")
+        throw new ApiError("User not found", 404)
     }
 
     let query = { user: userId }
@@ -289,7 +289,7 @@ export const bulkMarkAttendance = asyncHandler(async (req, res) => {
     const { date, attendanceData } = req.body
 
     if (!date || !attendanceData || !Array.isArray(attendanceData)) {
-        throw new ApiError(400, "Date and attendance data array are required")
+        throw new ApiError("Date and attendance data array are required", 400)
     }
 
     const attendanceDate = new Date(date)
@@ -381,7 +381,7 @@ export const deleteAttendance = asyncHandler(async (req, res) => {
 
     const attendance = await Attendance.findByIdAndDelete(id)
     if (!attendance) {
-        throw new ApiError(404, "Attendance record not found")
+        throw new ApiError("Attendance record not found", 404)
     }
 
     return res.status(200).json(
@@ -398,7 +398,7 @@ export const getDeviceStatus = asyncHandler(async (req, res) => {
             new ApiResponse(200, deviceInfo, "Device status retrieved successfully")
         )
     } catch (error) {
-        throw new ApiError(error.statusCode || 500, error.message)
+        throw new ApiError(error.message, error.statusCode || 500)
     }
 })
 
@@ -413,7 +413,7 @@ export const deleteFingerprintEnrollment = asyncHandler(async (req, res) => {
             new ApiResponse(200, result, "Fingerprint enrollment deleted successfully")
         )
     } catch (error) {
-        throw new ApiError(error.statusCode || 500, error.message)
+        throw new ApiError(error.message, error.statusCode || 500,)
     }
 })
 
@@ -425,6 +425,6 @@ export const initializeFingerprintDevice = asyncHandler(async (req, res) => {
             new ApiResponse(200, { status: 'initialized' }, "Fingerprint device initialized successfully")
         )
     } catch (error) {
-        throw new ApiError(error.statusCode || 500, error.message)
+        throw new ApiError(error.message, error.statusCode || 500,)
     }
 })

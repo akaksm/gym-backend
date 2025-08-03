@@ -31,7 +31,7 @@ class FingerprintDevice {
             return true
         } catch (error) {
             console.error('Failed to connect to fingerprint device:', error)
-            throw new ApiError(500, 'Device connection failed')
+            throw new ApiError('Device connection failed', 500)
         }
     }
 
@@ -43,7 +43,7 @@ class FingerprintDevice {
     async enrollFingerprint(userId, fingerIndex = 0) {
         try {
             if (!this.isConnected) {
-                throw new ApiError(500, 'Device not connected')
+                throw new ApiError('Device not connected', 500)
             }
 
             console.log(`Starting fingerprint enrollment for user ${userId}, finger ${fingerIndex}`)
@@ -65,14 +65,14 @@ class FingerprintDevice {
             }
         } catch (error) {
             console.error('Fingerprint enrollment failed:', error)
-            throw new ApiError(500, 'Fingerprint enrollment failed')
+            throw new ApiError('Fingerprint enrollment failed', 500)
         }
     }
 
     async verifyFingerprint(template, fingerIndex = 0) {
         try {
             if (!this.isConnected) {
-                throw new ApiError(500, 'Device not connected')
+                throw new ApiError('Device not connected', 500)
             }
 
             console.log('Starting fingerprint verification')
@@ -92,14 +92,14 @@ class FingerprintDevice {
             }
         } catch (error) {
             console.error('Fingerprint verification failed:', error)
-            throw new ApiError(500, 'Fingerprint verification failed')
+            throw new ApiError('Fingerprint verification failed', 500)
         }
     }
 
     async deleteFingerprint(userId, fingerIndex = 0) {
         try {
             if (!this.isConnected) {
-                throw new ApiError(500, 'Device not connected')
+                throw new ApiError('Device not connected', 500)
             }
 
             const templateKey = `${userId}_${fingerIndex}`
@@ -109,14 +109,14 @@ class FingerprintDevice {
             return { success: deleted }
         } catch (error) {
             console.error('Fingerprint deletion failed:', error)
-            throw new ApiError(500, 'Fingerprint deletion failed')
+            throw new ApiError('Fingerprint deletion failed', 500)
         }
     }
 
     async getDeviceInfo() {
         try {
             if (!this.isConnected) {
-                throw new ApiError(500, 'Device not connected')
+                throw new ApiError('Device not connected', 500)
             }
 
             return {
@@ -130,7 +130,7 @@ class FingerprintDevice {
             }
         } catch (error) {
             console.error('Failed to get device info:', error)
-            throw new ApiError(500, 'Failed to get device info')
+            throw new ApiError('Failed to get device info', 500)
         }
     }
 
@@ -187,12 +187,12 @@ class FingerprintService {
             // Check if user exists
             const user = await User.findById(userId)
             if (!user) {
-                throw new ApiError(404, 'User not found')
+                throw new ApiError('User not found', 404)
             }
 
             // Check if already enrolled
             if (user.isFingerprintEnrolled) {
-                throw new ApiError(400, 'User already enrolled for fingerprint')
+                throw new ApiError('User already enrolled for fingerprint', 400)
             }
 
             // Enroll fingerprint on device
@@ -212,7 +212,7 @@ class FingerprintService {
                     template: enrollmentResult.template
                 }
             } else {
-                throw new ApiError(500, 'Fingerprint enrollment failed')
+                throw new ApiError('Fingerprint enrollment failed', 500)
             }
         } catch (error) {
             console.error('Enrollment error:', error)
@@ -229,7 +229,7 @@ class FingerprintService {
             // Get user's stored template
             const user = await User.findById(userId)
             if (!user || !user.isFingerprintEnrolled) {
-                throw new ApiError(400, 'User not enrolled for fingerprint')
+                throw new ApiError('User not enrolled for fingerprint', 400)
             }
 
             // Create template object for verification
@@ -260,7 +260,7 @@ class FingerprintService {
                     attendance: attendance
                 }
             } else {
-                throw new ApiError(401, 'Fingerprint verification failed')
+                throw new ApiError('Fingerprint verification failed', 401)
             }
         } catch (error) {
             console.error('Verification error:', error)
@@ -291,7 +291,7 @@ class FingerprintService {
                     message: 'Fingerprint enrollment deleted successfully'
                 }
             } else {
-                throw new ApiError(500, 'Failed to delete fingerprint enrollment')
+                throw new ApiError('Failed to delete fingerprint enrollment', 500)
             }
         } catch (error) {
             console.error('Deletion error:', error)

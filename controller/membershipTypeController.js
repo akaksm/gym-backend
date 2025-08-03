@@ -19,7 +19,7 @@ const createMembershipType = asyncHandler(async (req, res) => {
     } = req.body
 
     if (!title || !priceNRS) {
-        throw new ApiError(400, "Title and price are required")
+        throw new ApiError("Title and price are required", 400)
     }
 
     // Check if title is valid enum value
@@ -28,13 +28,13 @@ const createMembershipType = asyncHandler(async (req, res) => {
         'Three-Year', 'Five-Year', 'Ten-Year', 'Lifetime'
     ]
     if (!validTitles.includes(title)) {
-        throw new ApiError(400, "Invalid membership type title")
+        throw new ApiError("Invalid membership type title", 400)
     }
 
     // Check if title already exists
     const existingType = await MembershipType.findOne({ title })
     if (existingType) {
-        throw new ApiError(400, "Membership type with this title already exists")
+        throw new ApiError("Membership type with this title already exists", 400)
     }
 
     const membershipType = await MembershipType.create({
@@ -52,7 +52,7 @@ const createMembershipType = asyncHandler(async (req, res) => {
 
     return res
         .status(201)
-        .json(new ApiResponse(201, membershipType, "Membership type created successfully"))
+        .json(new ApiResponse("Membership type created successfully", membershipType, 'success', 201))
 })
 
 // Get all membership types
@@ -61,7 +61,7 @@ const getAllMembershipTypes = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(new ApiResponse(200, membershipTypes, "Membership types retrieved successfully"))
+        .json(new ApiResponse("Membership types retrieved successfully", membershipTypes))
 })
 
 // Get active membership types
@@ -70,7 +70,7 @@ const getActiveMembershipTypes = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(new ApiResponse(200, membershipTypes, "Active membership types retrieved successfully"))
+        .json(new ApiResponse("Active membership types retrieved successfully", membershipTypes))
 })
 
 // Get membership type by ID
@@ -80,12 +80,12 @@ const getMembershipTypeById = asyncHandler(async (req, res) => {
     const membershipType = await MembershipType.findById(id)
 
     if (!membershipType) {
-        throw new ApiError(404, "Membership type not found")
+        throw new ApiError("Membership type not found", 404)
     }
 
     return res
         .status(200)
-        .json(new ApiResponse(200, membershipType, "Membership type retrieved successfully"))
+        .json(new ApiResponse("Membership type retrieved successfully", membershipType))
 })
 
 // Update membership type
@@ -106,14 +106,14 @@ const updateMembershipType = asyncHandler(async (req, res) => {
 
     const membershipType = await MembershipType.findById(id)
     if (!membershipType) {
-        throw new ApiError(404, "Membership type not found")
+        throw new ApiError("Membership type not found", 404)
     }
 
     if (title) {
         // Check if new title already exists (excluding current document)
         const existingType = await MembershipType.findOne({ title, _id: { $ne: id } })
         if (existingType) {
-            throw new ApiError(400, "Membership type with this title already exists")
+            throw new ApiError("Membership type with this title already exists", 400)
         }
 
         // Check if title is valid enum value
@@ -122,7 +122,7 @@ const updateMembershipType = asyncHandler(async (req, res) => {
             'Three-Year', 'Five-Year', 'Ten-Year', 'Lifetime'
         ]
         if (!validTitles.includes(title)) {
-            throw new ApiError(400, "Invalid membership type title")
+            throw new ApiError("Invalid membership type title", 400)
         }
 
         membershipType.title = title
@@ -142,7 +142,7 @@ const updateMembershipType = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(new ApiResponse(200, membershipType, "Membership type updated successfully"))
+        .json(new ApiResponse("Membership type updated successfully", membershipType))
 })
 
 // Delete membership type
@@ -152,12 +152,12 @@ const deleteMembershipType = asyncHandler(async (req, res) => {
     const membershipType = await MembershipType.findByIdAndDelete(id)
 
     if (!membershipType) {
-        throw new ApiError(404, "Membership type not found")
+        throw new ApiError("Membership type not found", 404)
     }
 
     return res
         .status(200)
-        .json(new ApiResponse(200, null, "Membership type deleted successfully"))
+        .json(new ApiResponse("Membership type deleted successfully", null))
 })
 
 // Toggle membership type status (active/inactive)
@@ -166,7 +166,7 @@ const toggleMembershipTypeStatus = asyncHandler(async (req, res) => {
 
     const membershipType = await MembershipType.findById(id)
     if (!membershipType) {
-        throw new ApiError(404, "Membership type not found")
+        throw new ApiError("Membership type not found", 404)
     }
 
     membershipType.isActive = !membershipType.isActive
@@ -174,7 +174,7 @@ const toggleMembershipTypeStatus = asyncHandler(async (req, res) => {
 
     return res
         .status(200)
-        .json(new ApiResponse(200, membershipType, `Membership type ${membershipType.isActive ? 'activated' : 'deactivated'} successfully`))
+        .json(new ApiResponse(`Membership type ${membershipType.isActive ? 'activated' : 'deactivated'} successfully`, membershipType))
 })
 
 export {
